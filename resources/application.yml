@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: tour-app
+
+app:
+  storage:
+    users-file: ./data/users.json
+    tour-groups-file: ./data/tour-groups.json
+    tour-applications-file: ./data/tour-applications.json
