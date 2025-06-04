@@ -5,6 +5,7 @@ import com.example.tour.entity.TourGroup;
 import com.example.tour.entity.User;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,7 @@ public class TourApplicationService {
     public Optional<TourApplication> findById(Long id) {
         return Optional.ofNullable(tourApplicationRepository.get(id));
     }
+
     // 创建新的旅游团申请
     public TourApplication createApplication(TourApplication application) {
         // 验证用户存在
@@ -136,5 +138,110 @@ public class TourApplicationService {
             tourGroup.getApplications().removeIf(app -> app.getId().equals(id));
             tourGroupRepository.put(tourGroup.getId(), tourGroup);
         }
+    }
+
+    // 录入顾客申请信息
+    public TourApplication recordCustomerApplication(TourApplication application) {
+        return createApplication(application);
+    }
+
+    // 录入和打印旅游申请书（这里仅模拟生成，实际需要使用PDF生成库）
+    public String generateTourApplicationPdf(Long id) {
+        TourApplication application = tourApplicationRepository.get(id);
+        if (application == null) {
+            throw new RuntimeException("Application not found with id: " + id);
+        }
+        // 这里可以使用PDF生成库生成PDF文件
+        return "Generated PDF for application " + id;
+    }
+
+    // 收取订金并录入支付信息
+    public TourApplication collectDeposit(Long id) {
+        return markDepositAsPaid(id);
+    }
+
+    // 生成余额交款单和打印旅行确认书（这里仅模拟生成，实际需要使用PDF生成库）
+    public String generateBalancePaymentSlipAndConfirmation(Long id) {
+        TourApplication application = tourApplicationRepository.get(id);
+        if (application == null) {
+            throw new RuntimeException("Application not found with id: " + id);
+        }
+        TourGroup tourGroup = tourGroupRepository.get(application.getTourGroupId());
+        if (tourGroup == null) {
+            throw new RuntimeException("Tour group not found with id: " + application.getTourGroupId());
+        }
+        // 计算余款支付截止日期
+        application.setBalanceDueDate(tourGroup.getStartDate().minusDays(7));
+        application.setBalancePaid(false);
+        tourApplicationRepository.put(id, application);
+        // 这里可以使用PDF生成库生成余额交款单和旅行确认书
+        return "Generated balance payment slip and confirmation for application " + id;
+    }
+
+    // 录入参加者信息
+    public TourApplication recordParticipants(Long id, Integer adultNumber, Integer childNumber) {
+        TourApplication application = tourApplicationRepository.get(id);
+        if (application == null) {
+            throw new RuntimeException("Application not found with id: " + id);
+        }
+        application.setAdultNumber(adultNumber);
+        application.setChildNumber(childNumber);
+        tourApplicationRepository.put(id, application);
+        return application;
+    }
+
+    // 变更/取消参加者信息
+    public TourApplication updateParticipants(Long id, Integer adultNumber, Integer childNumber) {
+        TourApplication application = tourApplicationRepository.get(id);
+        if (application == null) {
+            throw new RuntimeException("Application not found with id: " + id);
+        }
+        application.setAdultNumber(adultNumber);
+        application.setChildNumber(childNumber);
+        application.setNumberOfPeople(adultNumber + childNumber);
+        tourApplicationRepository.put(id, application);
+        return application;
+    }
+
+    // 取消整个申请（包括计算取消手续费并返还顾客）
+    public void cancelWholeApplication(Long id) {
+        TourApplication application = tourApplicationRepository.get(id);
+        if (application == null) {
+            throw new RuntimeException("Application not found with id: " + id);
+        }
+        // 计算取消手续费（这里简单模拟为订金的20%）
+        Double cancellationFee = application.getDepositAmount() * 0.2;
+        // 返还顾客金额
+        Double refundAmount = application.getDepositAmount() - cancellationFee;
+        System.out.println("Cancellation fee: " + cancellationFee + ", Refund amount: " + refundAmount);
+        cancelApplication(id);
+    }
+
+    // 生成余额交款单
+    public TourApplication generateBalancePaymentSlip(Long id) {
+        TourApplication application = tourApplicationRepository.get(id);
+        if (application == null) {
+            throw new RuntimeException("Application not found with id: " + id);
+        }
+        TourGroup tourGroup = tourGroupRepository.get(application.getTourGroupId());
+        if (tourGroup == null) {
+            throw new RuntimeException("Tour group not found with id: " + application.getTourGroupId());
+        }
+        // 计算余款支付截止日期
+        application.setBalanceDueDate(tourGroup.getStartDate().minusDays(7));
+        application.setBalancePaid(false);
+        tourApplicationRepository.put(id, application);
+        return application;
+    }
+
+    // 余款支付录入
+    public TourApplication recordBalancePayment(Long id) {
+        TourApplication application = tourApplicationRepository.get(id);
+        if (application == null) {
+            throw new RuntimeException("Application not found with id: " + id);
+        }
+        application.setBalancePaid(true);
+        tourApplicationRepository.put(id, application);
+        return application;
     }
 }

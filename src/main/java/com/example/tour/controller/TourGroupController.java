@@ -57,4 +57,22 @@ public class TourGroupController {
         boolean available = tourGroupService.hasAvailableSpots(id, numberOfPeople);
         return Map.of("available", available);
     }
+
+    // 修改旅游团信息
+    @PutMapping("/{id}/info")
+    public TourGroup updateTourGroupInfo(@PathVariable Long id, @RequestBody TourGroup updatedGroup) {
+        return tourGroupService.updateTourGroupInfo(id, updatedGroup);
+    }
+
+    // 查看旅游团信息
+    @GetMapping("/{id}/details")
+    public TourGroup getTourGroupDetails(@PathVariable Long id) {
+        return tourGroupService.getTourGroupDetails(id);
+    }
+
+    // 设置旅游团状态
+    @PutMapping("/{id}/status")
+    public TourGroup setTourGroupStatus(@PathVariable Long id, @RequestParam String status) {
+        return tourGroupService.setTourGroupStatus(id, status);
+    }
 }

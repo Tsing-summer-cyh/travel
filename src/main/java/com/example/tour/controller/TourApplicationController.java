@@ -61,4 +61,58 @@ public class TourApplicationController {
     public void cancelApplication(@PathVariable Long id) {
         tourApplicationService.cancelApplication(id);
     }
+
+    // 录入顾客申请信息
+    @PostMapping("/record")
+    public TourApplication recordCustomerApplication(@RequestBody TourApplication application) {
+        return tourApplicationService.recordCustomerApplication(application);
+    }
+
+    // 录入和打印旅游申请书
+    @GetMapping("/{id}/pdf")
+    public String generateTourApplicationPdf(@PathVariable Long id) {
+        return tourApplicationService.generateTourApplicationPdf(id);
+    }
+
+    // 收取订金并录入支付信息
+    @PutMapping("/{id}/collect-deposit")
+    public TourApplication collectDeposit(@PathVariable Long id) {
+        return tourApplicationService.collectDeposit(id);
+    }
+
+    // 生成余额交款单和打印旅行确认书
+    @GetMapping("/{id}/balance-slip")
+    public String generateBalancePaymentSlipAndConfirmation(@PathVariable Long id) {
+        return tourApplicationService.generateBalancePaymentSlipAndConfirmation(id);
+    }
+
+    // 录入参加者信息
+    @PutMapping("/{id}/participants")
+    public TourApplication recordParticipants(@PathVariable Long id, @RequestParam Integer adultNumber, @RequestParam Integer childNumber) {
+        return tourApplicationService.recordParticipants(id, adultNumber, childNumber);
+    }
+
+    // 变更/取消参加者信息
+    @PutMapping("/{id}/update-participants")
+    public TourApplication updateParticipants(@PathVariable Long id, @RequestParam Integer adultNumber, @RequestParam Integer childNumber) {
+        return tourApplicationService.updateParticipants(id, adultNumber, childNumber);
+    }
+
+    // 取消整个申请
+    @DeleteMapping("/{id}/cancel-whole")
+    public void cancelWholeApplication(@PathVariable Long id) {
+        tourApplicationService.cancelWholeApplication(id);
+    }
+
+    // 生成余额交款单
+    @GetMapping("/{id}/generate-balance-slip")
+    public TourApplication generateBalancePaymentSlip(@PathVariable Long id) {
+        return tourApplicationService.generateBalancePaymentSlip(id);
+    }
+
+    // 余款支付录入
+    @PutMapping("/{id}/pay-balance")
+    public TourApplication recordBalancePayment(@PathVariable Long id) {
+        return tourApplicationService.recordBalancePayment(id);
+    }
 }

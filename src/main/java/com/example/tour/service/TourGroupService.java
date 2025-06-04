@@ -63,4 +63,47 @@ public class TourGroupService {
 
         return (currentParticipants + numberOfPeople) <= tourGroup.getMaxParticipants();
     }
+
+    // 修改旅游团信息
+    public TourGroup updateTourGroupInfo(Long id, TourGroup updatedGroup) {
+        TourGroup tourGroup = tourGroupRepository.get(id);
+        if (tourGroup == null) {
+            throw new RuntimeException("Tour group not found with id: " + id);
+        }
+        tourGroup.setName(updatedGroup.getName());
+        tourGroup.setPrice(updatedGroup.getPrice());
+        tourGroup.setStartDate(updatedGroup.getStartDate());
+        tourGroup.setEndDate(updatedGroup.getEndDate());
+        tourGroup.setMaxParticipants(updatedGroup.getMaxParticipants());
+        tourGroup.setDepositRate(updatedGroup.getDepositRate());
+        tourGroup.setStatus(updatedGroup.getStatus());
+        tourGroup.setRemainingSpots(updatedGroup.getRemainingSpots());
+        tourGroupRepository.put(id, tourGroup);
+        return tourGroup;
+    }
+
+    // 查看旅游团信息
+    public TourGroup getTourGroupDetails(Long id) {
+        TourGroup tourGroup = tourGroupRepository.get(id);
+        if (tourGroup == null) {
+            throw new RuntimeException("Tour group not found with id: " + id);
+        }
+        int currentParticipants = tourGroup.getApplications().stream()
+                .filter(app -> app.getStatus() == com.example.tour.entity.TourApplication.ApplicationStatus.APPROVED)
+                .mapToInt(app -> app.getNumberOfPeople())
+                .sum();
+        tourGroup.setRemainingSpots(tourGroup.getMaxParticipants() - currentParticipants);
+        return tourGroup;
+    }
+
+    // 设置旅游团状态
+    public TourGroup setTourGroupStatus(Long id, String status) {
+        TourGroup tourGroup = tourGroupRepository.get(id);
+        if (tourGroup == null) {
+            throw new RuntimeException("Tour group not found with id: " + id);
+        }
+        tourGroup.setStatus(status);
+        tourGroupRepository.put(id, tourGroup);
+        return tourGroup;
+    }
 }

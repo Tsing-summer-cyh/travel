@@ -50,6 +50,94 @@
   </div>
   <button onclick="createTourGroup()">创建旅游团</button>
 
+  <h2>旅游团信息管理</h2>
+  <div class="form-group">
+    <label for="tourGroupIdForUpdate">旅游团ID</label>
+    <input type="number" id="tourGroupIdForUpdate" min="1">
+  </div>
+  <div class="form-group">
+    <label for="newName">新团名</label>
+    <input type="text" id="newName" placeholder="例如：欧洲豪华之旅">
+  </div>
+  <div class="form-group">
+    <label for="newPrice">新价格</label>
+    <input type="number" id="newPrice" min="0" step="0.01">
+  </div>
+  <div class="form-group">
+    <label for="newStartDate">新开始日期</label>
+    <input type="date" id="newStartDate">
+  </div>
+  <div class="form-group">
+    <label for="newEndDate">新结束日期</label>
+    <input type="date" id="newEndDate">
+  </div>
+  <button onclick="updateTourGroupInfo()">修改旅游团信息</button>
+  <button onclick="getTourGroupDetails()">查看旅游团信息</button>
+  <div class="form-group">
+    <label for="newStatus">新状态</label>
+    <input type="text" id="newStatus" placeholder="例如：上架/下架">
+  </div>
+  <button onclick="setTourGroupStatus()">设置旅游团状态</button>
+
+  <h2>申请管理</h2>
+  <div class="form-group">
+    <label for="applicantName">申请责任人姓名</label>
+    <input type="text" id="applicantName">
+  </div>
+  <div class="form-group">
+    <label for="adultNumber">大人人数</label>
+    <input type="number" id="adultNumber" min="0">
+  </div>
+  <div class="form-group">
+    <label for="childNumber">小孩人数</label>
+    <input type="number" id="childNumber" min="0">
+  </div>
+  <button onclick="recordCustomerApplication()">录入顾客申请信息</button>
+  <div class="form-group">
+    <label for="applicationIdForPdf">申请ID</label>
+    <input type="number" id="applicationIdForPdf" min="1">
+  </div>
+  <button onclick="generateTourApplicationPdf()">录入和打印旅游申请书</button>
+  <div class="form-group">
+    <label for="applicationIdForDeposit">申请ID</label>
+    <input type="number" id="applicationIdForDeposit" min="1">
+  </div>
+  <button onclick="collectDeposit()">收取订金并录入支付信息</button>
+  <div class="form-group">
+    <label for="applicationIdForBalanceSlip">申请ID</label>
+    <input type="number" id="applicationIdForBalanceSlip" min="1">
+  </div>
+  <button onclick="generateBalancePaymentSlipAndConfirmation()">生成余额交款单和打印旅行确认书</button>
+
+  <h2>参加者管理</h2>
+  <div class="form-group">
+    <label for="applicationIdForParticipants">申请ID</label>
+    <input type="number" id="applicationIdForParticipants" min="1">
+  </div>
+  <div class="form-group">
+    <label for="newAdultNumber">新大人人数</label>
+    <input type="number" id="newAdultNumber" min="0">
+  </div>
+  <div class="form-group">
+    <label for="newChildNumber">新小孩人数</label>
+    <input type="number" id="newChildNumber" min="0">
+  </div>
+  <button onclick="recordParticipants()">录入参加者信息</button>
+  <button onclick="updateParticipants()">变更/取消参加者信息</button>
+  <div class="form-group">
+    <label for="applicationIdForCancelWhole">申请ID</label>
+    <input type="number" id="applicationIdForCancelWhole" min="1">
+  </div>
+  <button onclick="cancelWholeApplication()">取消整个申请</button>
+
+  <h2>余款管理</h2>
+  <div class="form-group">
+    <label for="applicationIdForBalance">申请ID</label>
+    <input type="number" id="applicationIdForBalance" min="1">
+  </div>
+  <button onclick="generateBalancePaymentSlip()">生成余额交款单</button>
+  <button onclick="recordBalancePayment()">余款支付录入</button>
+
   <div class="tour-list">
     <h2>旅游团列表</h2>
     <button onclick="loadTourGroups()">刷新列表</button>
@@ -90,35 +178,37 @@
   // 加载所有旅游团
   function loadTourGroups() {
     fetch('/api/tour-groups')
-            .then(response => response.json())
-            .then(data => {
-              const container = document.getElementById('tourGroups');
-              container.innerHTML = '';
+     .then(response => response.json())
+     .then(data => {
+        const container = document.getElementById('tourGroups');
+        container.innerHTML = '';
 
-              if (data.length === 0) {
-                container.innerHTML = '<p>暂无旅游团</p>';
-                return;
-              }
+        if (data.length === 0) {
+          container.innerHTML = '<p>暂无旅游团</p>';
+          return;
+        }
 
-              data.forEach(tour => {
-                const deposit = tour.price * tour.depositRate;
-                const div = document.createElement('div');
-                div.className = 'tour-item';
-                div.innerHTML = `
+        data.forEach(tour => {
+          const deposit = tour.price * tour.depositRate;
+          const div = document.createElement('div');
+          div.className = 'tour-item';
+          div.innerHTML = `
                             <h3>${tour.name} (ID: ${tour.id})</h3>
                             <p>目的地: ${tour.destination}</p>
                             <p>日期: ${tour.startDate} 至 ${tour.endDate}</p>
                             <p>价格: ¥${tour.price}</p>
                             <p>订金: ¥${deposit} (${tour.depositRate * 100}%)</p>
                             <p>最大人数: ${tour.maxParticipants}</p>
+                            <p>状态: ${tour.status}</p>
+                            <p>剩余名额: ${tour.remainingSpots}</p>
                         `;
-                container.appendChild(div);
-              });
-            })
-            .catch(error => {
-              console.error('Error loading tour groups:', error);
-              alert('加载旅游团失败！');
-            });
+          container.appendChild(div);
+        });
+      })
+     .catch(error => {
+        console.error('Error loading tour groups:', error);
+        alert('加载旅游团失败！');
+      });
   }
 
   // 创建旅游团
@@ -146,7 +236,9 @@
       endDate: endDate,
       maxParticipants: parseInt(maxParticipants),
       price: parseFloat(price),
-      depositRate: parseFloat(depositRate)
+      depositRate: parseFloat(depositRate),
+      status: '上架',
+      remainingSpots: parseInt(maxParticipants)
     };
 
     fetch('/api/tour-groups', {
@@ -154,19 +246,312 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(tourGroup)
     })
-            .then(response => response.json())
-            .then(data => {
-              console.log('创建成功，返回数据:', data);
-              alert('旅游团创建成功！');
-              loadTourGroups();  // 重新加载旅游团列表
-            })
-            .catch(error => {
-              console.error('创建旅游团时出错:', error);
-              alert('创建旅游团失败！');
-            });
+     .then(response => response.json())
+     .then(data => {
+        console.log('创建成功，返回数据:', data);
+        alert('旅游团创建成功！');
+        loadTourGroups();  // 重新加载旅游团列表
+      })
+     .catch(error => {
+        console.error('创建旅游团时出错:', error);
+        alert('创建旅游团失败！');
+      });
   }
 
+  // 修改旅游团信息
+  function updateTourGroupInfo() {
+    const id = document.getElementById('tourGroupIdForUpdate').value;
+    const newName = document.getElementById('newName').value;
+    const newPrice = document.getElementById('newPrice').value;
+    const newStartDate = document.getElementById('newStartDate').value;
+    const newEndDate = document.getElementById('newEndDate').value;
 
+    if (!id || (!newName && !newPrice && !newStartDate && !newEndDate)) {
+      alert('请填写旅游团ID和至少一个要修改的信息！');
+      return;
+    }
+
+    const updatedGroup = {
+      name: newName,
+      price: parseFloat(newPrice),
+      startDate: newStartDate,
+      endDate: newEndDate
+    };
+
+    fetch(`/api/tour-groups/${id}/info`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedGroup)
+    })
+     .then(response => response.json())
+     .then(data => {
+        console.log('修改成功，返回数据:', data);
+        alert('旅游团信息修改成功！');
+        loadTourGroups();
+      })
+     .catch(error => {
+        console.error('修改旅游团信息时出错:', error);
+        alert('修改旅游团信息失败！');
+      });
+  }
+
+  // 查看旅游团信息
+  function getTourGroupDetails() {
+    const id = document.getElementById('tourGroupIdForUpdate').value;
+
+    if (!id) {
+      alert('请填写旅游团ID！');
+      return;
+    }
+
+    fetch(`/api/tour-groups/${id}/details`)
+     .then(response => response.json())
+     .then(data => {
+        alert(`旅游团信息：\n团名：${data.name}\n目的地：${data.destination}\n日期：${data.startDate} 至 ${data.endDate}\n价格：¥${data.price}\n订金比例：${data.depositRate * 100}%\n最大人数：${data.maxParticipants}\n状态：${data.status}\n剩余名额：${data.remainingSpots}`);
+      })
+     .catch(error => {
+        console.error('查看旅游团信息时出错:', error);
+        alert('查看旅游团信息失败！');
+      });
+  }
+
+  // 设置旅游团状态
+  function setTourGroupStatus() {
+    const id = document.getElementById('tourGroupIdForUpdate').value;
+    const newStatus = document.getElementById('newStatus').value;
+
+    if (!id || !newStatus) {
+      alert('请填写旅游团ID和新状态！');
+      return;
+    }
+
+    fetch(`/api/tour-groups/${id}/status?status=${newStatus}`, {
+      method: 'PUT'
+    })
+     .then(response => response.json())
+     .then(data => {
+        console.log('设置成功，返回数据:', data);
+        alert('旅游团状态设置成功！');
+        loadTourGroups();
+      })
+     .catch(error => {
+        console.error('设置旅游团状态时出错:', error);
+        alert('设置旅游团状态失败！');
+      });
+  }
+
+  // 录入顾客申请信息
+  function recordCustomerApplication() {
+    const userId = parseInt(document.getElementById('userId').value);
+    const tourGroupId = parseInt(document.getElementById('tourGroupId').value);
+    const applicantName = document.getElementById('applicantName').value;
+    const adultNumber = parseInt(document.getElementById('adultNumber').value);
+    const childNumber = parseInt(document.getElementById('childNumber').value);
+    const numberOfPeople = adultNumber + childNumber;
+
+    const application = {
+      userId: userId,
+      tourGroupId: tourGroupId,
+      applicantName: applicantName,
+      adultNumber: adultNumber,
+      childNumber: childNumber,
+      numberOfPeople: numberOfPeople
+    };
+
+    fetch('/api/tour-applications/record', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(application)
+    })
+     .then(response => response.json())
+     .then(data => {
+        alert(`申请提交成功！订金金额: ¥${data.depositAmount}`);
+      })
+     .catch(error => {
+        console.error('录入顾客申请信息时出错:', error);
+        alert('录入顾客申请信息失败！');
+      });
+  }
+
+  // 录入和打印旅游申请书
+  function generateTourApplicationPdf() {
+    const id = document.getElementById('applicationIdForPdf').value;
+
+    if (!id) {
+      alert('请填写申请ID！');
+      return;
+    }
+
+    fetch(`/api/tour-applications/${id}/pdf`)
+     .then(response => response.text())
+     .then(data => {
+        alert(data);
+      })
+     .catch(error => {
+        console.error('录入和打印旅游申请书时出错:', error);
+        alert('录入和打印旅游申请书失败！');
+      });
+  }
+
+  // 收取订金并录入支付信息
+  function collectDeposit() {
+    const id = document.getElementById('applicationIdForDeposit').value;
+
+    if (!id) {
+      alert('请填写申请ID！');
+      return;
+    }
+
+    fetch(`/api/tour-applications/${id}/collect-deposit`, {
+      method: 'PUT'
+    })
+     .then(response => response.json())
+     .then(data => {
+        alert('订金支付成功！');
+        loadApplications();
+      })
+     .catch(error => {
+        console.error('收取订金并录入支付信息时出错:', error);
+        alert('收取订金并录入支付信息失败！');
+      });
+  }
+
+  // 生成余额交款单和打印旅行确认书
+  function generateBalancePaymentSlipAndConfirmation() {
+    const id = document.getElementById('applicationIdForBalanceSlip').value;
+
+    if (!id) {
+      alert('请填写申请ID！');
+      return;
+    }
+
+    fetch(`/api/tour-applications/${id}/balance-slip`)
+     .then(response => response.text())
+     .then(data => {
+        alert(data);
+      })
+     .catch(error => {
+        console.error('生成余额交款单和打印旅行确认书时出错:', error);
+        alert('生成余额交款单和打印旅行确认书失败！');
+      });
+  }
+
+  // 录入参加者信息
+  function recordParticipants() {
+    const id = document.getElementById('applicationIdForParticipants').value;
+    const adultNumber = parseInt(document.getElementById('newAdultNumber').value);
+    const childNumber = parseInt(document.getElementById('newChildNumber').value);
+
+    if (!id || !adultNumber || !childNumber) {
+      alert('请填写申请ID、大人人数和小孩人数！');
+      return;
+    }
+
+    fetch(`/api/tour-applications/${id}/participants?adultNumber=${adultNumber}&childNumber=${childNumber}`, {
+      method: 'PUT'
+    })
+     .then(response => response.json())
+     .then(data => {
+        alert('参加者信息录入成功！');
+        loadApplications();
+      })
+     .catch(error => {
+        console.error('录入参加者信息时出错:', error);
+        alert('录入参加者信息失败！');
+      });
+  }
+
+  // 变更/取消参加者信息
+  function updateParticipants() {
+    const id = document.getElementById('applicationIdForParticipants').value;
+    const adultNumber = parseInt(document.getElementById('newAdultNumber').value);
+    const childNumber = parseInt(document.getElementById('newChildNumber').value);
+
+    if (!id || (!adultNumber && !childNumber)) {
+      alert('请填写申请ID和至少一个要修改的人数信息！');
+      return;
+    }
+
+    fetch(`/api/tour-applications/${id}/update-participants?adultNumber=${adultNumber}&childNumber=${childNumber}`, {
+      method: 'PUT'
+    })
+     .then(response => response.json())
+     .then(data => {
+        alert('参加者信息变更成功！');
+        loadApplications();
+      })
+     .catch(error => {
+        console.error('变更/取消参加者信息时出错:', error);
+        alert('变更/取消参加者信息失败！');
+      });
+  }
+
+  // 取消整个申请
+  function cancelWholeApplication() {
+    const id = document.getElementById('applicationIdForCancelWhole').value;
+
+    if (!id) {
+      alert('请填写申请ID！');
+      return;
+    }
+
+    fetch(`/api/tour-applications/${id}/cancel-whole`, {
+      method: 'DELETE'
+    })
+     .then(() => {
+        alert('申请已取消！');
+        loadApplications();
+      })
+     .catch(error => {
+        console.error('取消整个申请时出错:', error);
+        alert('取消整个申请失败！');
+      });
+  }
+
+  // 生成余额交款单
+  function generateBalancePaymentSlip() {
+    const id = document.getElementById('applicationIdForBalance').value;
+
+    if (!id) {
+      alert('请填写申请ID！');
+      return;
+    }
+
+    fetch(`/api/tour-applications/${id}/generate-balance-slip`)
+     .then(response => response.json())
+     .then(data => {
+        alert(`余额交款单生成成功！余款支付截止日期：${data.balanceDueDate}`);
+      })
+     .catch(error => {
+        console.error('生成余额交款单时出错:', error);
+        alert('生成余额交款单失败！');
+      });
+  }
+
+  // 余款支付录入
+  function recordBalancePayment() {
+    const id = document.getElementById('applicationIdForBalance').value;
+
+    if (!id) {
+      alert('请填写申请ID！');
+      return;
+    }
+
+    fetch(`/api/tour-applications/${id}/pay-balance`, {
+      method: 'PUT'
+    })
+     .then(response => response.json())
+     .then(data => {
+        alert('余款支付成功！');
+        loadApplications();
+      })
+     .catch(error => {
+        console.error('余款支付录入时出错:', error);
+        alert('余款支付录入失败！');
+      });
+  }
 
   // 申请加入旅游团
   function applyForTour() {
@@ -184,34 +569,34 @@
       },
       body: JSON.stringify(application)
     })
-            .then(response => response.json())
-            .then(data => {
-              alert(`申请提交成功！订金金额: ¥${data.depositAmount}`);
-            })
-            .catch(error => {
-              console.error('Error applying for tour:', error);
-              alert('申请失败！');
-            });
+     .then(response => response.json())
+     .then(data => {
+        alert(`申请提交成功！订金金额: ¥${data.depositAmount}`);
+      })
+     .catch(error => {
+        console.error('Error applying for tour:', error);
+        alert('申请失败！');
+      });
   }
 
   // 加载用户的申请
   function loadApplications() {
     const userId = document.getElementById('userIdForApplications').value;
     fetch(`/api/tour-applications/user/${userId}`)
-            .then(response => response.json())
-            .then(data => {
-              const container = document.getElementById('applications');
-              container.innerHTML = '';
+     .then(response => response.json())
+     .then(data => {
+        const container = document.getElementById('applications');
+        container.innerHTML = '';
 
-              if (data.length === 0) {
-                container.innerHTML = '<p>暂无申请记录</p>';
-                return;
-              }
+        if (data.length === 0) {
+          container.innerHTML = '<p>暂无申请记录</p>';
+          return;
+        }
 
-              data.forEach(app => {
-                const div = document.createElement('div');
-                div.className = 'tour-item';
-                div.innerHTML = `
+        data.forEach(app => {
+          const div = document.createElement('div');
+          div.className = 'tour-item';
+          div.innerHTML = `
                             <h3>申请ID: ${app.id}</h3>
                             <p>旅游团ID: ${app.tourGroupId}</p>
                             <p>申请时间: ${app.applyTime}</p>
@@ -219,31 +604,34 @@
                             <p>订金: ¥${app.depositAmount}</p>
                             <p>状态: ${getStatusText(app.status)}</p>
                             <p>订金支付: ${app.depositPaid ? '已支付' : '未支付'}</p>
+                            <p>余款支付: ${app.balancePaid ? '已支付' : '未支付'}</p>
+                            <p>余款支付截止日期: ${app.balanceDueDate}</p>
                             ${!app.depositPaid ? `<button onclick="payDeposit(${app.id})">支付订金</button>` : ''}
                             ${app.status === 'PENDING' ? `<button onclick="cancelApplication(${app.id})">取消申请</button>` : ''}
                         `;
-                container.appendChild(div);
-              });
-            })
-            .catch(error => {
-              console.error('Error loading applications:', error);
-              alert('加载申请失败！');
-            });
+          container.appendChild(div);
+        });
+      })
+     .catch(error => {
+        console.error('Error loading applications:', error);
+        alert('加载申请失败！');
+      });
   }
+
   // 支付订金
   function payDeposit(applicationId) {
     fetch(`/api/tour-applications/${applicationId}/pay-deposit`, {
       method: 'PUT'
     })
-            .then(response => response.json())
-            .then(data => {
-              alert('订金支付成功！');
-              loadApplications();
-            })
-            .catch(error => {
-              console.error('Error paying deposit:', error);
-              alert('支付失败！');
-            });
+     .then(response => response.json())
+     .then(data => {
+        alert('订金支付成功！');
+        loadApplications();
+      })
+     .catch(error => {
+        console.error('Error paying deposit:', error);
+        alert('支付失败！');
+      });
   }
 
   // 取消申请
@@ -251,14 +639,14 @@
     fetch(`/api/tour-applications/${applicationId}`, {
       method: 'DELETE'
     })
-            .then(() => {
-              alert('申请已取消！');
-              loadApplications();
-            })
-            .catch(error => {
-              console.error('Error cancelling application:', error);
-              alert('取消失败！');
-            });
+     .then(() => {
+        alert('申请已取消！');
+        loadApplications();
+      })
+     .catch(error => {
+        console.error('Error cancelling application:', error);
+        alert('取消失败！');
+      });
   }
 
   // 获取状态文本

@@ -1,6 +1,7 @@
 package com.example.tour.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class TourApplication implements Serializable {
@@ -13,6 +14,11 @@ public class TourApplication implements Serializable {
     private Double depositAmount;
     private Boolean depositPaid;
     private ApplicationStatus status;
+    private String applicantName; // 新增：申请责任人姓名
+    private Integer adultNumber; // 新增：大人人数
+    private Integer childNumber; // 新增：小孩人数
+    private Boolean balancePaid; // 新增：余款支付情况
+    private LocalDate balanceDueDate; // 新增：余款支付截止日期
 
     public enum ApplicationStatus {
         PENDING,    // 待处理
@@ -92,5 +98,45 @@ public class TourApplication implements Serializable {
 
     public void setStatus(ApplicationStatus status) {
         this.status = status;
+    }
+
+    public String getApplicantName() {
+        return applicantName;
+    }
+
+    public void setApplicantName(String applicantName) {
+        this.applicantName = applicantName;
+    }
+
+    public Integer getAdultNumber() {
+        return adultNumber;
+    }
+
+    public void setAdultNumber(Integer adultNumber) {
+        this.adultNumber = adultNumber;
+    }
+
+    public Integer getChildNumber() {
+        return childNumber;
+    }
+
+    public void setChildNumber(Integer childNumber) {
+        this.childNumber = childNumber;
+    }
+
+    public Boolean getBalancePaid() {
+        return balancePaid;
+    }
+
+    public void setBalancePaid(Boolean balancePaid) {
+        this.balancePaid = balancePaid;
+    }
+
+    public LocalDate getBalanceDueDate() {
+        return balanceDueDate;
+    }
+
+    public void setBalanceDueDate(LocalDate balanceDueDate) {
+        this.balanceDueDate = balanceDueDate;
     }
 }

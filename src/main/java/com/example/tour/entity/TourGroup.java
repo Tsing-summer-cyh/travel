@@ -19,8 +19,10 @@ public class TourGroup implements Serializable {
 
     private Integer maxParticipants;
     private Double price;
-    private Double depositRate;  // 确保这个字段存在
+    private Double depositRate;
     private List<TourApplication> applications = new ArrayList<>();
+    private String status; // 新增：旅游团状态
+    private Integer remainingSpots; // 新增：剩余名额
 
     // 订金计算方法
     public Double calculateDeposit() {
@@ -98,5 +100,21 @@ public class TourGroup implements Serializable {
 
     public void setApplications(List<TourApplication> applications) {
         this.applications = applications;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Integer getRemainingSpots() {
+        return remainingSpots;
+    }
+
+    public void setRemainingSpots(Integer remainingSpots) {
+        this.remainingSpots = remainingSpots;
     }
 }
