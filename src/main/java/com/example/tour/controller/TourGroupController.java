@@ -39,6 +39,7 @@ public class TourGroupController {
         return tourGroupService.save(tourGroup);
     }
 
+    // 删除旅游团
     @DeleteMapping("/{id}")
     public void deleteTourGroup(@PathVariable Long id) {
         tourGroupService.deleteById(id);

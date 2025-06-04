@@ -36,6 +36,7 @@ public class TourGroupService {
         return tourGroup;
     }
 
+    // 删除指定ID的旅游团
     public void deleteById(Long id) {
         tourGroupRepository.remove(id);
     }
